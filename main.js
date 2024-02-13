@@ -13,7 +13,7 @@ const TelgramChannelStarter = async (request) => {
     // 获取请求的URL和地区
     const url = new URL(request.url)
     // 获取用户ip
-    const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for") || request.conn.remoteAddr.hostname
+    const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for") || (request.conn.remoteAddr ? request.conn.remoteAddr.hostname : 'unknown');
     // 获取地区
     const Region = await fetch(`https://ipinfo.io/${ip}/json`)
         .then(res => res.json())
@@ -87,6 +87,7 @@ const TelgramChannelStarter = async (request) => {
         nextBefore,
         Region,
         version,
+        ip,
         ChannelMessageData
     }), {
         headers: {
