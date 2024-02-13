@@ -12,8 +12,12 @@ const deninedRegion = ["CN"]
 const TelgramChannelStarter = async (request) => {
     // 获取请求的URL和地区
     const url = new URL(request.url)
-    const geo = Deno.customGeolocation;
-    const Region = geo ? geo.country : null;
+    // 获取用户ip
+    const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for") || request.conn.remoteAddr.hostname
+    // 获取地区
+    const Region = await fetch(`https://ipinfo.io/${ip}/json`)
+        .then(res => res.json())
+        .then(res => res.country)
     // 如果地区不在禁止的地区列表中，将denined设置为false
     if (!deninedRegion.includes(Region)) denined = false
     // 获取代理URL
